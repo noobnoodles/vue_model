@@ -28,7 +28,10 @@
     "noUnusedParameters": true,
     "noFallthroughCasesInSwitch": true,
     "paths": {
-      "@/*": ["./packages/*/src/*"]
+      "@base-ui/*": ["./packages/base-user-interface/src/*"],
+      "@admin/*": ["./packages/admin/src/*"],
+      "@client/*": ["./packages/client/src/*"],
+      "@shared/*": ["./packages/shared/src/*"]
     }
   }
 }
