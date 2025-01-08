@@ -2,14 +2,19 @@
 
 ## Work Content
 
-- Complete the login page
-- Add tailwindCss to project
+- Completed the login page
+- Added tailwindCss to project
 - Set up the project environment
-- Add the login interface
+- Added the login interface
 
 ## Details
 
-By using the element-plus framework , I completed the login page.
-However, the login interface is not done perfectly yet .There has some problems still need to be solved.
-Such as style and the login interface is not very beautiful.
+By using the element-plus framework, I completed the login page.
+However, the login interface is not done perfectly yet. There are some problems that still need to be solved,
+such as styling issues and the overall aesthetic appearance of the interface.
+
+-------
+
+NOONES
+2023.12.28
 

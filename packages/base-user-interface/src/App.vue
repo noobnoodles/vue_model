@@ -1,7 +1,3 @@
-<script setup lang="ts">
-// 不需要导入 login.vue，因为我们使用路由来管理它
-</script>
-
 <template>
   <router-view />
 </template>
