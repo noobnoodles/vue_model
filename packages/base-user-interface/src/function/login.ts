@@ -1,8 +1,5 @@
-import { ref, reactive } from 'vue'
-import type { FormInstance, FormRules } from 'element-plus'
-import { login, getSystemInfo } from '@/api/auth'
-import { ElMessage } from 'element-plus'
-import { useRouter } from 'vue-router'
+import { login } from '@/api/userService'
+import type { IUserLogin } from '@/types/interfaces'
 
 export const useLogin = () => {
   const router = useRouter()
@@ -10,7 +7,7 @@ export const useLogin = () => {
   const loading = ref(false)
   const loginFormRef = ref<FormInstance>()
 
-  const loginForm = reactive({
+  const loginForm = reactive<IUserLogin>({
     username: '',
     password: '',
     remember: false

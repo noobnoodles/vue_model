@@ -1,9 +1,6 @@
 <script setup lang="ts">
-import { onMounted } from 'vue'
 import { User, Lock } from '@element-plus/icons-vue'
 import { useLogin } from '@/function/login'
-// 页面构建和功能分离
-// 使用function导入login前端功能函数
 
 const {
   title,

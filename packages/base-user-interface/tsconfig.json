@@ -8,7 +8,12 @@
       "@/*": ["./src/*"],
       "@shared/*": ["../../shared/*"]
     },
-    "types": ["element-plus/global", "node"],
+    "types": [
+      "element-plus/global", 
+      "node",
+      "./src/auto-imports.d.ts",
+      "./src/components.d.ts"
+    ],
     "moduleResolution": "bundler",
     "allowImportingTsExtensions": true,
     "target": "ES2020",
