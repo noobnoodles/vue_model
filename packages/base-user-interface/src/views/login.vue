@@ -10,7 +10,8 @@ const {
   loginFormRef,
   fetchSystemTitle,
   handleLogin,
-  handleRegister
+  handleRegister,
+  handleForgetPassword
 } = useLogin()
 //定义登录信息
 onMounted(() => {
@@ -73,7 +74,7 @@ onMounted(() => {
         
         <div class="flex justify-between items-center mt-4">
           <el-link type="primary" @click="handleRegister" class="text-sm">注册账号</el-link>
-          <el-link type="primary" class="text-sm">忘记密码？</el-link>
+          <el-link type="primary" @click="handleForgetPassword" class="text-sm">忘记密码？</el-link>
         </div>
       </el-form>
     </el-card>

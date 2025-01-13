@@ -45,7 +45,7 @@ export const useLogin = () => {
       if (valid) {
         loading.value = true
         try {
-          const res = await login(loginForm)
+          const { data } = await login(loginForm)
           ElMessage.success('登录成功')
           router.push('/')
         } catch (error: any) {
@@ -61,6 +61,10 @@ export const useLogin = () => {
     router.push('/register')
   }
 
+  const handleForgetPassword = () => {
+    router.push('/forget-password')
+  }
+
   return {
     title,
     loading,
@@ -69,6 +73,7 @@ export const useLogin = () => {
     loginFormRef,
     fetchSystemTitle,
     handleLogin,
-    handleRegister
+    handleRegister,
+    handleForgetPassword
   }
 }

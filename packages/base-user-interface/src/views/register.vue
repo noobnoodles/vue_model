@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { User, Lock, Upload } from '@element-plus/icons-vue'
+import { User, Lock, Upload, Message } from '@element-plus/icons-vue'
 import { useRegister } from '@/function/register'
 
 const {
@@ -9,8 +9,7 @@ const {
   registerFormRef,
   handleRegister,
   backToLogin,
-  handleAvatarSuccess,
-  beforeAvatarUpload,
+  handleAvatarChange,
   avatarUrl
 } = useRegister()
 </script>
@@ -20,7 +19,7 @@ const {
     <el-card class="w-[420px] shadow-lg">
       <template #header>
         <div class="text-center">
-          <h2 class="text-xl font-bold text-gray-700">用户注册</h2>
+          <h2 class="text-xl font-bold text-gray-700">注册</h2>
         </div>
       </template>
       
@@ -31,35 +30,43 @@ const {
         label-position="top"
         class="space-y-4"
       >
-        <el-form-item prop="avatar" class="flex flex-col items-center">
-          <div class="mb-2">
-            <el-upload
-              class="avatar-uploader"
-              action="/api/upload"
-              :show-file-list="false"
-              :on-success="handleAvatarSuccess"
-              :before-upload="beforeAvatarUpload"
-            >
-              <img
-                v-if="avatarUrl"
-                :src="avatarUrl"
-                class="w-24 h-24 rounded-full object-cover"
-              />
-              <div v-else class="avatar-uploader-icon">
-                <el-icon class="text-4xl">
-                  <Upload />
-                </el-icon>
-              </div>
-            </el-upload>
+        <div class="flex flex-col items-center mb-6">
+          <input
+            type="file"
+            accept="image/*"
+            @change="handleAvatarChange"
+            class="hidden"
+            ref="fileInput"
+          />
+          <div class="avatar-uploader mb-2" @click="$refs.fileInput.click()">
+            <img
+              v-if="avatarUrl"
+              :src="avatarUrl"
+              class="w-24 h-24 rounded-full object-cover"
+            />
+            <div v-else class="avatar-uploader-icon">
+              <el-icon class="text-4xl">
+                <Upload />
+              </el-icon>
+            </div>
           </div>
-          <span class="text-gray-600">头像</span>
-        </el-form-item>
+          <span class="text-gray-600 text-sm">点击此处上传头像</span>
+        </div>
 
         <el-form-item label="用户名" prop="username">
           <el-input
             v-model="registerForm.username"
             placeholder="请输入用户名"
             :prefix-icon="User"
+            class="h-10"
+          />
+        </el-form-item>
+        
+        <el-form-item label="邮箱" prop="email">
+          <el-input
+            v-model="registerForm.email"
+            placeholder="请输入邮箱"
+            :prefix-icon="Message"
             class="h-10"
           />
         </el-form-item>
@@ -96,7 +103,7 @@ const {
             注册
           </el-button>
         </el-form-item>
-        
+
         <div class="flex justify-center mt-4">
           <el-link type="primary" @click="backToLogin" class="text-sm">
             返回登录
@@ -109,7 +116,7 @@ const {
 
 <style scoped>
 .avatar-uploader {
-  @apply border border-gray-200 border-dashed rounded-full w-24 h-24 cursor-pointer hover:border-blue-500 flex items-center justify-center;
+  @apply border border-gray-200 border-dashed rounded-full w-24 h-24 cursor-pointer hover:border-blue-500 flex items-center justify-center transition-colors duration-300;
 }
 
 .avatar-uploader-icon {
