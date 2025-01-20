@@ -3,7 +3,7 @@ import { User, Lock } from '@element-plus/icons-vue'
 import { useLogin } from '@/function/login'
 
 const {
-  title,
+  systemInfo,
   loading,
   loginForm,
   loginRules,
@@ -13,7 +13,8 @@ const {
   handleRegister,
   handleForgetPassword
 } = useLogin()
-//定义登录信息
+
+// 在组件挂载时获取系统信息
 onMounted(() => {
   fetchSystemTitle()
 })
@@ -24,7 +25,7 @@ onMounted(() => {
     <el-card class="w-[420px] shadow-lg">
       <template #header>
         <div class="text-center">
-          <h2 class="text-xl font-bold text-gray-700">{{ title }}</h2>
+          <h2 class="text-xl font-bold text-gray-700">{{ systemInfo.title || '标题' }}</h2>
         </div>
       </template>
       

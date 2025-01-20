@@ -16,3 +16,14 @@ html, body {
   height: 100%;
 }
 </style>
+
+<script setup lang="ts">
+import { useSysInfoStore } from '@/stores/sysInfo'
+
+const sysInfoStore = useSysInfoStore()
+
+// 在应用启动时获取系统信息
+onMounted(async () => {
+  await sysInfoStore.fetchSystemInfo()
+})
+</script>

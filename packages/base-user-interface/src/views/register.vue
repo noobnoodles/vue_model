@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { User, Lock, Upload, Message } from '@element-plus/icons-vue'
+import { User, Lock, Message, Phone } from '@element-plus/icons-vue'
 import { useRegister } from '@/function/register'
 
 const {
@@ -8,9 +8,7 @@ const {
   registerRules,
   registerFormRef,
   handleRegister,
-  backToLogin,
-  handleAvatarChange,
-  avatarUrl
+  backToLogin
 } = useRegister()
 </script>
 
@@ -30,29 +28,6 @@ const {
         label-position="top"
         class="space-y-4"
       >
-        <div class="flex flex-col items-center mb-6">
-          <input
-            type="file"
-            accept="image/*"
-            @change="handleAvatarChange"
-            class="hidden"
-            ref="fileInput"
-          />
-          <div class="avatar-uploader mb-2" @click="$refs.fileInput.click()">
-            <img
-              v-if="avatarUrl"
-              :src="avatarUrl"
-              class="w-24 h-24 rounded-full object-cover"
-            />
-            <div v-else class="avatar-uploader-icon">
-              <el-icon class="text-4xl">
-                <Upload />
-              </el-icon>
-            </div>
-          </div>
-          <span class="text-gray-600 text-sm">点击此处上传头像</span>
-        </div>
-
         <el-form-item label="用户名" prop="username">
           <el-input
             v-model="registerForm.username"
@@ -67,6 +42,15 @@ const {
             v-model="registerForm.email"
             placeholder="请输入邮箱"
             :prefix-icon="Message"
+            class="h-10"
+          />
+        </el-form-item>
+
+        <el-form-item label="手机号" prop="phone">
+          <el-input
+            v-model="registerForm.phone"
+            placeholder="请输入手机号"
+            :prefix-icon="Phone"
             class="h-10"
           />
         </el-form-item>
@@ -115,11 +99,5 @@ const {
 </template>
 
 <style scoped>
-.avatar-uploader {
-  @apply border border-gray-200 border-dashed rounded-full w-24 h-24 cursor-pointer hover:border-blue-500 flex items-center justify-center transition-colors duration-300;
-}
-
-.avatar-uploader-icon {
-  @apply w-full h-full flex items-center justify-center;
-}
+/* 移除头像相关样式 */
 </style>

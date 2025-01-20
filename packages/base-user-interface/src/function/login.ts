@@ -1,11 +1,13 @@
-import { login } from '@/api/userService'
+import { getSystemInfo, login } from '@/api/userService'
 import type { IUserLogin } from '@/types/interfaces'
+import type { FormInstance, FormRules } from 'element-plus'
+import { useSysInfoStore } from '@/stores/sysInfo'
 
 export const useLogin = () => {
   const router = useRouter()
-  const title = ref('标题')
   const loading = ref(false)
   const loginFormRef = ref<FormInstance>()
+  const sysInfoStore = useSysInfoStore()
 
   const loginForm = reactive<IUserLogin>({
     username: '',
@@ -30,11 +32,10 @@ export const useLogin = () => {
       const controller = new AbortController()
       const timeoutId = setTimeout(() => controller.abort(), 500)
       
-      const res = await getSystemInfo()
+      await sysInfoStore.fetchSystemInfo()
       clearTimeout(timeoutId)
-      title.value = res.data.title || '标题'
     } catch (error) {
-      title.value = '标题'
+      console.error('获取系统信息失败:', error)
     }
   }
 
@@ -66,11 +67,11 @@ export const useLogin = () => {
   }
 
   return {
-    title,
     loading,
     loginForm,
     loginRules,
     loginFormRef,
+    systemInfo: computed(() => sysInfoStore.systemInfo), // 导出系统信息的计算属性
     fetchSystemTitle,
     handleLogin,
     handleRegister,

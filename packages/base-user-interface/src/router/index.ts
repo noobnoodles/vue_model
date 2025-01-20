@@ -1,5 +1,6 @@
 import { createRouter, createWebHistory } from 'vue-router'
 import type { RouteRecordRaw } from 'vue-router'
+import { useSysInfoStore } from '@/stores/sysInfo'
 
 const routes: RouteRecordRaw[] = [
   {
@@ -26,6 +27,17 @@ const routes: RouteRecordRaw[] = [
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
   routes
+})
+
+router.beforeEach(async (to, from, next) => {
+  const sysInfoStore = useSysInfoStore()
+  
+  // 如果系统信息未加载，则加载系统信息
+  if (!sysInfoStore.systemInfo.title) {
+    await sysInfoStore.fetchSystemInfo()
+  }
+  
+  next()
 })
 
 export default router

@@ -14,14 +14,34 @@ export interface IUserRegister {
 
 // 系统相关接口
 export interface ISystemInfo {
-  title: string
-  version: string
-  // 其他系统信息字段...
+  // 系统基本信息
+  title: string           // 系统标题
+  description: string     // 系统描述
+  version: string        // 系统版本
+  copyright: string      // 版权信息
+  sysBelone: string      // 系统标识
 }
 
 // 通用响应接口
 export interface IApiResponse<T = any> {
   code: number
-  data: T
   message: string
-} 
+  data?: T
+}
+
+// 与后端RegisterDTO保持一致
+export interface IRegisterForm {
+  username: string
+  password: string
+  confirmPassword: string
+  email: string
+  phone: string
+  sysBelone: string
+}
+
+// 注册响应接口
+export interface IRegisterResponse {
+  code: number
+  message: string
+  data?: any
+}
