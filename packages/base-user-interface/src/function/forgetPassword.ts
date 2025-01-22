@@ -1,37 +1,37 @@
-import { register } from '@/api/userService'
-import type { IRegisterForm } from '@/types/interfaces'
+import { ref, reactive } from 'vue'
 import type { FormInstance, FormRules } from 'element-plus'
-import { useSysInfoStore } from '@/stores/sysInfo'
+import { useRouter } from 'vue-router'
 
-export function useRegister() {
+export function useForgetPassword() {
     const router = useRouter()
     const loading = ref(false)
-    const registerFormRef = ref<FormInstance>()
-    const sysInfoStore = useSysInfoStore()
-    
-    const registerForm = ref<IRegisterForm>({
+    const forgetFormRef = ref<FormInstance>()
+
+    const forgetForm = reactive({
         username: '',
-        password: '',
-        confirmPassword: '',
         email: '',
-        phone: '',
-        sysBelone: sysInfoStore.systemInfo.sysBelone || 'AUTH_SYSTEM'
+        newPassword: '',
+        confirmPassword: ''
     })
 
-    const registerRules = reactive<FormRules>({
+    const forgetRules = reactive<FormRules>({
         username: [
             { required: true, message: '请输入用户名', trigger: 'blur' },
             { min: 3, max: 20, message: '长度在 3 到 20 个字符', trigger: 'blur' }
         ],
-        password: [
-            { required: true, message: '请输入密码', trigger: 'blur' },
+        email: [
+            { required: true, message: '请输入邮箱', trigger: 'blur' },
+            { type: 'email', message: '请输入正确的邮箱地址', trigger: 'blur' }
+        ],
+        newPassword: [
+            { required: true, message: '请输入新密码', trigger: 'blur' },
             { min: 6, max: 20, message: '长度在 6 到 20 个字符', trigger: 'blur' }
         ],
         confirmPassword: [
             { required: true, message: '请确认密码', trigger: 'blur' },
             {
                 validator: (rule: any, value: string, callback: Function) => {
-                    if (value !== registerForm.value.password) {
+                    if (value !== forgetForm.newPassword) {
                         callback(new Error('两次输入密码不一致'))
                     } else {
                         callback()
@@ -39,28 +39,21 @@ export function useRegister() {
                 },
                 trigger: 'blur'
             }
-        ],
-        email: [
-            { required: true, message: '请输入邮箱', trigger: 'blur' },
-            { type: 'email', message: '请输入正确的邮箱地址', trigger: 'blur' }
-        ],
-        phone: [
-            { pattern: /^1[3-9]\d{9}$/, message: '请输入正确的手机号', trigger: 'blur' }
         ]
     })
 
-    const handleRegister = async (formEl: FormInstance | undefined) => {
+    const handleSubmit = async (formEl: FormInstance | undefined) => {
         if (!formEl) return
         
         await formEl.validate(async (valid: boolean) => {
             if (valid) {
                 loading.value = true
                 try {
-                    await register(registerForm.value)
-                    ElMessage.success('注册成功')
+                    // TODO: 调用重置密码 API
+                    ElMessage.success('密码重置成功')
                     router.push('/login')
                 } catch (error: any) {
-                    ElMessage.error(error.response?.data?.message || '注册失败')
+                    ElMessage.error(error.response?.data?.message || '密码重置失败')
                 } finally {
                     loading.value = false
                 }
@@ -74,10 +67,10 @@ export function useRegister() {
 
     return {
         loading,
-        registerForm,
-        registerRules,
-        registerFormRef,
-        handleRegister,
+        forgetForm,
+        forgetRules,
+        forgetFormRef,
+        handleSubmit,
         backToLogin
     }
-} 
+}

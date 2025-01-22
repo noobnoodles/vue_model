@@ -1,8 +1,10 @@
 // 用户相关接口
 export interface IUserLogin {
-  username: string
+  account: string
   password: string
   remember: boolean
+  loginType: 1 | 2 | 3  // 1-用户名，2-手机号，3-邮箱
+  sysBelone: string     // 所属系统
 }
 
 export interface IUserRegister {

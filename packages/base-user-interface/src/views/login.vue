@@ -8,10 +8,15 @@ const {
   loginForm,
   loginRules,
   loginFormRef,
+  loginType,
+  verifyCode,
   fetchSystemTitle,
+  switchLoginType,
+  sendVerifyCode,
   handleLogin,
   handleRegister,
-  handleForgetPassword
+  handleForgetPassword,
+  handleAccountInput
 } = useLogin()
 
 // 在组件挂载时获取系统信息
@@ -36,16 +41,17 @@ onMounted(() => {
         label-position="top"
         class="space-y-4"
       >
-        <el-form-item label="用户名" prop="username">
+        <el-form-item label="账号" prop="account">
           <el-input
-            v-model="loginForm.username"
-            placeholder="请输入用户名"
+            v-model="loginForm.account"
+            placeholder="请输入账号/手机号/邮箱"
             :prefix-icon="User"
             class="h-10"
+            @input="handleAccountInput"
           />
         </el-form-item>
         
-        <el-form-item label="密码" prop="password">
+        <el-form-item label="密码" prop="password" v-if="loginType === 'password'">
           <el-input
             v-model="loginForm.password"
             type="password"
@@ -55,12 +61,26 @@ onMounted(() => {
             class="h-10"
           />
         </el-form-item>
-        
-        <el-form-item>
-          <div class="flex items-center justify-between">
-            <el-checkbox v-model="loginForm.remember">记住我</el-checkbox>
+
+        <el-form-item label="验证码" prop="verifyCode" v-else>
+          <div class="flex gap-2">
+            <el-input
+              v-model="verifyCode"
+              placeholder="请输入验证码"
+              class="h-10 flex-1"
+            />
+            <el-button @click="sendVerifyCode" :disabled="!loginForm.account">
+              发送验证码
+            </el-button>
           </div>
         </el-form-item>
+        
+        <div class="flex justify-between items-center mb-4">
+          <el-checkbox v-model="loginForm.remember">记住我</el-checkbox>
+          <el-link type="primary" @click="switchLoginType" class="text-sm">
+            {{ loginType === 'password' ? '手机号登录' : '密码登录' }}
+          </el-link>
+        </div>
         
         <el-form-item>
           <el-button
