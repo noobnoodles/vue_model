@@ -8,20 +8,20 @@ export function useForgetPassword() {
     const forgetFormRef = ref<FormInstance>()
 
     const forgetForm = reactive({
-        username: '',
         email: '',
+        code: '',
         newPassword: '',
         confirmPassword: ''
     })
 
     const forgetRules = reactive<FormRules>({
-        username: [
-            { required: true, message: '请输入用户名', trigger: 'blur' },
-            { min: 3, max: 20, message: '长度在 3 到 20 个字符', trigger: 'blur' }
-        ],
         email: [
             { required: true, message: '请输入邮箱', trigger: 'blur' },
             { type: 'email', message: '请输入正确的邮箱地址', trigger: 'blur' }
+        ],
+        code: [
+            { required: true, message: '请输入验证码', trigger: 'blur' },
+            { len: 6, message: '验证码长度为6位', trigger: 'blur' }
         ],
         newPassword: [
             { required: true, message: '请输入新密码', trigger: 'blur' },
@@ -61,6 +61,15 @@ export function useForgetPassword() {
         })
     }
 
+    const sendCode = async () => {
+        try {
+            // TODO: 调用发送验证码API
+            ElMessage.success('验证码已发送')
+        } catch (error: any) {
+            ElMessage.error(error.response?.data?.message || '验证码发送失败')
+        }
+    }
+
     const backToLogin = () => {
         router.push('/login')
     }
@@ -71,6 +80,7 @@ export function useForgetPassword() {
         forgetRules,
         forgetFormRef,
         handleSubmit,
-        backToLogin
+        backToLogin,
+        sendCode
     }
 }

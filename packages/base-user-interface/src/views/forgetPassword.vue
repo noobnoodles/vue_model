@@ -8,7 +8,8 @@ const {
     forgetRules,
     forgetFormRef,
     handleSubmit,
-    backToLogin
+    backToLogin,
+    sendCode
 } = useForgetPassword()
 </script>
 
@@ -28,21 +29,29 @@ const {
         label-position="top"
         class="space-y-4"
       >
-        <el-form-item label="用户名" prop="username">
-          <el-input
-            v-model="forgetForm.username"
-            placeholder="请输入用户名"
-            :prefix-icon="User"
-            class="h-10"
-          />
-        </el-form-item>
-
         <el-form-item label="邮箱" prop="email">
           <el-input
             v-model="forgetForm.email"
             placeholder="请输入邮箱"
             :prefix-icon="Message"
             class="h-10"
+          />
+          <el-link
+            type="primary"
+            class="ml-2 float-right"
+            :disabled="!forgetForm.email"
+            @click="sendCode"
+          >
+            发送验证码
+          </el-link>
+        </el-form-item>
+
+        <el-form-item label="验证码" prop="code">
+          <el-input
+            v-model="forgetForm.code"
+            placeholder="请输入验证码"
+            class="h-10"
+            maxlength="6"
           />
         </el-form-item>
         
