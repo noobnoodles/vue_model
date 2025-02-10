@@ -1,6 +1,6 @@
 import { ref } from 'vue'
 import { defineStore } from 'pinia'
-import { getSystemInfo } from '@/api/userService'
+import { getSystemInfo } from '@/api'
 import type { ISystemInfo } from '@/types/interfaces'
 
 export const useSysInfoStore = defineStore('sysInfo', () => {

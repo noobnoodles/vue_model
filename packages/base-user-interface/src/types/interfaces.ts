@@ -37,7 +37,7 @@ export interface IRegisterForm {
   password: string
   confirmPassword: string
   email: string
-  phone: string
+  emailCode: string  // 改为 emailCode 以匹配后端
   sysBelone: string
 }
 

@@ -1,4 +1,4 @@
-import { loginByPassword, loginByCode, getSystemInfo } from '@/api/userService'
+import { loginByPassword, loginByCode } from '@/api/index'
 import type { IUserLogin } from '@/types/interfaces'
 import type { FormInstance, FormRules } from 'element-plus'
 import { useSysInfoStore } from '@/stores/sysInfo'

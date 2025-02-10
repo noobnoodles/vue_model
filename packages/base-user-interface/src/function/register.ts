@@ -1,4 +1,4 @@
-import { register } from '@/api/userService'
+import { register, sendRegisterCode } from '@/api'
 import type { IRegisterForm } from '@/types/interfaces'
 import type { FormInstance, FormRules } from 'element-plus'
 import { useSysInfoStore } from '@/stores/sysInfo'
@@ -9,12 +9,15 @@ export function useRegister() {
     const registerFormRef = ref<FormInstance>()
     const sysInfoStore = useSysInfoStore()
     
+    const countdown = ref(0)
+    const timer = ref<NodeJS.Timeout | null>(null)
+    
     const registerForm = ref<IRegisterForm>({
         username: '',
         password: '',
         confirmPassword: '',
         email: '',
-        phone: '',
+        emailCode: '',
         sysBelone: sysInfoStore.systemInfo.sysBelone || 'AUTH_SYSTEM'
     })
 
@@ -44,10 +47,50 @@ export function useRegister() {
             { required: true, message: '请输入邮箱', trigger: 'blur' },
             { type: 'email', message: '请输入正确的邮箱地址', trigger: 'blur' }
         ],
-        phone: [
-            { pattern: /^1[3-9]\d{9}$/, message: '请输入正确的手机号', trigger: 'blur' }
+        emailCode: [
+            { required: true, message: '请输入验证码', trigger: 'blur' },
+            { len: 6, message: '验证码长度应为6位', trigger: 'blur' }
         ]
     })
+
+    const sendCode = async () => {
+        if (countdown.value > 0) return
+        
+        try {
+            // 验证邮箱格式
+            if (!registerForm.value.email) {
+                ElMessage.warning('请输入邮箱')
+                return
+            }
+
+            // 使用正则表达式验证邮箱格式
+            const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
+            if (!emailRegex.test(registerForm.value.email)) {
+                ElMessage.warning('请输入正确的邮箱地址')
+                return
+            }
+
+            // 调用发送验证码接口
+            await sendRegisterCode(
+                registerForm.value.email,
+                registerForm.value.sysBelone
+            )
+            
+            ElMessage.success('验证码已发送，请查收邮件')
+            countdown.value = 60
+            timer.value = setInterval(() => {
+                countdown.value--
+                if (countdown.value <= 0) {
+                    if (timer.value) {
+                        clearInterval(timer.value)
+                        timer.value = null
+                    }
+                }
+            }, 1000)
+        } catch (error: any) {
+            ElMessage.error(error.response?.data?.message || '发送验证码失败')
+        }
+    }
 
     const handleRegister = async (formEl: FormInstance | undefined) => {
         if (!formEl) return
@@ -56,7 +99,15 @@ export function useRegister() {
             if (valid) {
                 loading.value = true
                 try {
-                    await register(registerForm.value)
+                    // 发送注册请求，包含验证码和确认密码
+                    await register({
+                        username: registerForm.value.username,
+                        password: registerForm.value.password,
+                        confirmPassword: registerForm.value.confirmPassword,
+                        email: registerForm.value.email,
+                        emailCode: registerForm.value.emailCode,
+                        sysBelone: registerForm.value.sysBelone
+                    })
                     ElMessage.success('注册成功')
                     router.push('/login')
                 } catch (error: any) {
@@ -72,12 +123,21 @@ export function useRegister() {
         router.push('/login')
     }
 
+    onUnmounted(() => {
+        if (timer.value) {
+            clearInterval(timer.value)
+            timer.value = null
+        }
+    })
+
     return {
         loading,
         registerForm,
         registerRules,
         registerFormRef,
         handleRegister,
-        backToLogin
+        backToLogin,
+        sendCode,
+        countdown
     }
 } 
