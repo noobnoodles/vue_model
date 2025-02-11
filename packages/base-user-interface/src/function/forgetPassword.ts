@@ -1,21 +1,28 @@
-import { ref, reactive } from 'vue'
+import { ref, reactive, onUnmounted } from 'vue'
 import type { FormInstance, FormRules } from 'element-plus'
 import { useRouter } from 'vue-router'
+import { sendResetCode, changePassword } from '@/api'
+import { useSysInfoStore } from '@/stores/sysInfo'
 
 export function useForgetPassword() {
     const router = useRouter()
     const loading = ref(false)
     const forgetFormRef = ref<FormInstance>()
+    const countdown = ref(0)
+    const timer = ref<NodeJS.Timeout | null>(null)
+    const resetSuccess = ref(false)
+    const sysInfoStore = useSysInfoStore()
 
     const forgetForm = reactive({
-        email: '',
+        account: '',
         code: '',
         newPassword: '',
-        confirmPassword: ''
+        confirmPassword: '',
+        sysBelone: sysInfoStore.systemInfo.sysBelone || 'AUTH_SYSTEM'
     })
 
     const forgetRules = reactive<FormRules>({
-        email: [
+        account: [
             { required: true, message: '请输入邮箱', trigger: 'blur' },
             { type: 'email', message: '请输入正确的邮箱地址', trigger: 'blur' }
         ],
@@ -49,10 +56,26 @@ export function useForgetPassword() {
             if (valid) {
                 loading.value = true
                 try {
-                    // TODO: 调用重置密码 API
+                    // 打印表单数据
+                    console.log('提交的表单数据:', {
+                        account: forgetForm.account,
+                        confirmPassword: forgetForm.confirmPassword,
+                        newPassword: forgetForm.newPassword,
+                        sysBelone: forgetForm.sysBelone,
+                        code: forgetForm.code
+                    })
+
+                    await changePassword(
+                        forgetForm.account,
+                        forgetForm.confirmPassword,
+                        forgetForm.newPassword,
+                        forgetForm.sysBelone,
+                        forgetForm.code
+                    )
                     ElMessage.success('密码重置成功')
-                    router.push('/login')
+                    resetSuccess.value = true
                 } catch (error: any) {
+                    console.error('提交失败:', error)  // 添加错误日志
                     ElMessage.error(error.response?.data?.message || '密码重置失败')
                 } finally {
                     loading.value = false
@@ -62,13 +85,52 @@ export function useForgetPassword() {
     }
 
     const sendCode = async () => {
+        if (countdown.value > 0) return
+
         try {
-            // TODO: 调用发送验证码API
-            ElMessage.success('验证码已发送')
+            // 验证邮箱格式
+            if (!forgetForm.account) {
+                ElMessage.warning('请输入邮箱')
+                return
+            }
+
+            // 使用正则表达式验证邮箱格式
+            const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
+            if (!emailRegex.test(forgetForm.account)) {
+                ElMessage.warning('请输入正确的邮箱地址')
+                return
+            }
+
+            // 调用发送验证码接口，添加系统标识
+            await sendResetCode(
+                forgetForm.account,
+                forgetForm.sysBelone,
+                forgetForm.account
+            )
+            
+            ElMessage.success('验证码已发送，请查收邮件')
+            countdown.value = 60
+            timer.value = setInterval(() => {
+                countdown.value--
+                if (countdown.value <= 0) {
+                    if (timer.value) {
+                        clearInterval(timer.value)
+                        timer.value = null
+                    }
+                }
+            }, 1000)
         } catch (error: any) {
             ElMessage.error(error.response?.data?.message || '验证码发送失败')
         }
     }
+
+    // 组件卸载时清理定时器
+    onUnmounted(() => {
+        if (timer.value) {
+            clearInterval(timer.value)
+            timer.value = null
+        }
+    })
 
     const backToLogin = () => {
         router.push('/login')
@@ -81,6 +143,8 @@ export function useForgetPassword() {
         forgetFormRef,
         handleSubmit,
         backToLogin,
-        sendCode
+        sendCode,
+        countdown,
+        resetSuccess
     }
 }

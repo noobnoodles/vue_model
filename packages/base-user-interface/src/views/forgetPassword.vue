@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import { Message, Lock } from '@element-plus/icons-vue'
+import { CircleCheckFilled } from '@element-plus/icons-vue'
 import { useForgetPassword } from '@/function/forgetPassword'
 
 const {
@@ -9,7 +10,9 @@ const {
     forgetFormRef,
     handleSubmit,
     backToLogin,
-    sendCode
+    sendCode,
+    countdown,
+    resetSuccess
 } = useForgetPassword()
 </script>
 
@@ -22,16 +25,36 @@ const {
         </div>
       </template>
       
+      <!-- 重置成功显示 -->
+      <template v-if="resetSuccess">
+        <div class="text-center space-y-4">
+          <el-icon class="text-5xl text-green-500">
+            <CircleCheckFilled />
+          </el-icon>
+          <h3 class="text-xl font-medium">密码修改成功！</h3>
+          <p class="text-gray-600">您的密码已经成功修改，请妥善保管</p>
+          <el-button
+            type="primary"
+            class="w-full h-10 text-sm font-medium mt-4"
+            @click="backToLogin"
+          >
+            返回登录
+          </el-button>
+        </div>
+      </template>
+      
+      <!-- 重置表单 -->
       <el-form
+        v-else
         ref="forgetFormRef"
         :model="forgetForm"
         :rules="forgetRules"
         label-position="top"
         class="space-y-4"
       >
-        <el-form-item label="邮箱" prop="email">
+        <el-form-item label="邮箱" prop="account">
           <el-input
-            v-model="forgetForm.email"
+            v-model="forgetForm.account"
             placeholder="请输入邮箱"
             :prefix-icon="Message"
             class="h-10"
@@ -39,10 +62,10 @@ const {
           <el-link
             type="primary"
             class="ml-2 float-right"
-            :disabled="!forgetForm.email"
+            :disabled="!forgetForm.account || countdown > 0"
             @click="sendCode"
           >
-            发送验证码
+            {{ countdown > 0 ? `${countdown}秒后重试` : '发送验证码' }}
           </el-link>
         </el-form-item>
 
