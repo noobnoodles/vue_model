@@ -15,37 +15,76 @@ const service: AxiosInstance = axios.create({
   }
 })
 
-// 请求拦截器
+// token相关工具函数
+export const TokenUtil = {
+  getToken: () => localStorage.getItem('token'),
+  getRefreshToken: () => localStorage.getItem('refreshToken'),
+  setTokens: (token: string, refreshToken: string) => {
+    localStorage.setItem('token', token)
+    localStorage.setItem('refreshToken', refreshToken)
+  },
+  removeTokens: () => {
+    localStorage.removeItem('token')
+    localStorage.removeItem('refreshToken')
+    localStorage.removeItem('expireTime')
+  }
+}
+
+// 刷新token的函数
+const refreshToken = async () => {
+  try {
+    const response = await service.post('/auth/refresh', {
+      refreshToken: TokenUtil.getRefreshToken()
+    })
+    const { accessToken, refreshToken } = response.data.data
+    TokenUtil.setTokens(accessToken, refreshToken)
+    return accessToken
+  } catch (error) {
+    TokenUtil.removeTokens()
+    window.location.href = '/login'
+    return null
+  }
+}
+
+// 修改请求拦截器
 service.interceptors.request.use(
   (config) => {
-    // 在请求发送之前做一些处理，比如添加token
-    const token = localStorage.getItem('token')
+    const token = TokenUtil.getToken()
     if (token) {
       config.headers['Authorization'] = `Bearer ${token}`
     }
     return config
   },
   (error) => {
-    // 处理请求错误
-    console.error('Request error:', error)
     return Promise.reject(error)
   }
 )
 
-// 响应拦截器
+// 修改响应拦截器
 service.interceptors.response.use(
   (response: AxiosResponse) => {
     const res = response.data
-    // 根据后端的状态码进行处理
-    if (res.code !== 200) {
-      ElMessage.error(res.message || '请求失败')
-      return Promise.reject(new Error(res.message || '请求失败'))
+    if (res.code === 200) {
+      return res
     }
-    return res
+    
+    ElMessage.error(res.message || '请求失败')
+    return Promise.reject(new Error(res.message || '请求失败'))
   },
-  (error) => {
-    // 处理响应错误
-    console.error('Response error:', error)
+  async (error) => {
+    const originalRequest = error.config
+    
+    // token过期处理
+    if (error.response?.status === 401 && !originalRequest._retry) {
+      originalRequest._retry = true
+      const newToken = await refreshToken()
+      
+      if (newToken) {
+        originalRequest.headers['Authorization'] = `Bearer ${newToken}`
+        return service(originalRequest)
+      }
+    }
+    
     ElMessage.error(error.response?.data?.message || '请求失败')
     return Promise.reject(error)
   }

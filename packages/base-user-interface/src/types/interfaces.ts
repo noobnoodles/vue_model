@@ -47,3 +47,24 @@ export interface IRegisterResponse {
   message: string
   data?: any
 }
+
+// Token相关接口
+export interface ITokenResponse {
+  token: string           // 对应后端的token字段
+  refreshToken: string    // 对应后端的refreshToken字段
+  expireTime: number      // 对应后端的expireTime字段 (Long)
+}
+
+// 登录响应接口
+export interface ILoginResponse {
+  code: number
+  message: string
+  data: {
+    id: string
+    username: string
+    avatar: string | null
+    token: string
+    refreshToken: string
+    expireTime: number
+  }
+}

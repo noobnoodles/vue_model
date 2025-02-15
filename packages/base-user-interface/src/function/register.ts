@@ -2,6 +2,9 @@ import { register, sendRegisterCode } from '@/api'
 import type { IRegisterForm } from '@/types/interfaces'
 import type { FormInstance, FormRules } from 'element-plus'
 import { useSysInfoStore } from '@/stores/sysInfo'
+import { ref, reactive, onUnmounted } from 'vue'
+import { useRouter } from 'vue-router'
+import { ElMessage } from 'element-plus'
 
 export function useRegister() {
     const router = useRouter()
@@ -11,6 +14,8 @@ export function useRegister() {
     
     const countdown = ref(0)
     const timer = ref<NodeJS.Timeout | null>(null)
+    const currentStep = ref(1) // 1: 基本信息, 2: 邮箱验证
+    const sendingCode = ref(false) // 发送验证码的加载状态
     
     const registerForm = ref<IRegisterForm>({
         username: '',
@@ -123,6 +128,30 @@ export function useRegister() {
         router.push('/login')
     }
 
+    const handleContinue = async (formEl: FormInstance | undefined) => {
+        if (!formEl) return
+        
+        await formEl.validate(async (valid: boolean) => {
+            if (valid) {
+                currentStep.value = 2
+            }
+        })
+    }
+
+    const handleSendCode = async () => {
+        if (sendingCode.value) return
+        sendingCode.value = true
+        try {
+            await sendCode()
+        } finally {
+            sendingCode.value = false
+        }
+    }
+
+    const backToStep1 = () => {
+        currentStep.value = 1
+    }
+
     onUnmounted(() => {
         if (timer.value) {
             clearInterval(timer.value)
@@ -137,7 +166,11 @@ export function useRegister() {
         registerFormRef,
         handleRegister,
         backToLogin,
-        sendCode,
-        countdown
+        countdown,
+        currentStep,
+        handleContinue,
+        backToStep1,
+        sendingCode,
+        handleSendCode
     }
 } 

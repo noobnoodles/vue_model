@@ -2,6 +2,9 @@
 import { Message, Lock } from '@element-plus/icons-vue'
 import { CircleCheckFilled } from '@element-plus/icons-vue'
 import { useForgetPassword } from '@/function/forgetPassword'
+import { ref } from 'vue'
+
+const sendingCode = ref(false)
 
 const {
     loading,
@@ -14,6 +17,16 @@ const {
     countdown,
     resetSuccess
 } = useForgetPassword()
+
+const handleSendCode = async () => {
+  if (sendingCode.value) return
+  sendingCode.value = true
+  try {
+    await sendCode()
+  } finally {
+    sendingCode.value = false
+  }
+}
 </script>
 
 <template>
@@ -59,14 +72,16 @@ const {
             :prefix-icon="Message"
             class="h-10"
           />
-          <el-link
+          <el-button
             type="primary"
+            link
             class="ml-2 float-right"
             :disabled="!forgetForm.account || countdown > 0"
-            @click="sendCode"
+            :loading="sendingCode"
+            @click="handleSendCode"
           >
             {{ countdown > 0 ? `${countdown}秒后重试` : '发送验证码' }}
-          </el-link>
+          </el-button>
         </el-form-item>
 
         <el-form-item label="验证码" prop="code">

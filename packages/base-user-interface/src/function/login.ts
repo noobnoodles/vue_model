@@ -1,7 +1,11 @@
-import { loginByPassword, loginByCode } from '@/api/index'
-import type { IUserLogin } from '@/types/interfaces'
+import { loginByPassword } from '@/api/index'
+import type { IUserLogin, ILoginResponse } from '@/types/interfaces'
 import type { FormInstance, FormRules } from 'element-plus'
 import { useSysInfoStore } from '@/stores/sysInfo'
+import { ref, reactive } from 'vue'
+import { useRouter } from 'vue-router'
+import { ElMessage } from 'element-plus'
+import { TokenUtil } from '@/utils/request'
 
 export const useLogin = () => {
   const router = useRouter()
@@ -96,42 +100,48 @@ export const useLogin = () => {
   const handleLogin = async (formEl: FormInstance | undefined) => {
     if (!formEl) return
     
-    await formEl.validate(async (valid) => {
-      if (valid) {
-        // 输出登录信息
-        console.log('登录信息:', {
-          account: loginForm.account,
-          loginType: loginForm.loginType,
-          sysBelone: loginForm.sysBelone,
-          method: loginType.value // 密码登录还是验证码登录
-        })
-
-        loading.value = true
-        try {
-          let response
-          if (loginType.value === 'password') {
-            response = await loginByPassword(loginForm)
-          } else {
-            if (!verifyCode.value) {
-              ElMessage.warning('请输入验证码')
-              return
+    await formEl.validate(async (valid: boolean) => {
+        if (valid) {
+            loading.value = true
+            try {
+                const response = await loginByPassword({
+                    account: loginForm.account,
+                    password: loginForm.password,
+                    remember: loginForm.remember,
+                    loginType: loginForm.loginType,
+                    sysBelone: sysInfoStore.systemInfo.sysBelone || 'AUTH_SYSTEM'
+                }) as ILoginResponse
+                
+                // 检查响应状态码和数据
+                if (response.code === 200 && response.data) {
+                    console.log('登录成功，用户信息:', response.data)
+                    
+                    const { token, refreshToken, expireTime } = response.data
+                    
+                    // 检查所有必需的token数据是否存在
+                    if (token && refreshToken && expireTime) {
+                        // 使用 TokenUtil 保存token
+                        TokenUtil.setTokens(token, refreshToken)
+                        localStorage.setItem('expireTime', expireTime.toString())
+                        ElMessage.success('登录成功')
+                        router.push('/')
+                    } else {
+                        throw new Error('Token数据不完整')
+                    }
+                } else {
+                    ElMessage.error(response.message || '登录失败')
+                }
+            } catch (error: any) {
+                console.error('登录错误:', error)
+                if (error.message === 'Token数据不完整') {
+                    ElMessage.error('登录失败：服务器返回的数据不完整')
+                } else {
+                    ElMessage.error(error.response?.data?.message || '登录失败')
+                }
+            } finally {
+                loading.value = false
             }
-            response = await loginByCode(loginForm, verifyCode.value)
-          }
-          
-          if (response.code === 200) {
-            ElMessage.success('登录成功')
-            if (loginForm.remember) {
-              localStorage.setItem('token', response.data.token)
-            }
-            router.push('/')
-          }
-        } catch (error: any) {
-          ElMessage.error(error.response?.data?.message || '登录失败')
-        } finally {
-          loading.value = false
         }
-      }
     })
   }
 

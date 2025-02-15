@@ -1,34 +1,21 @@
 <script setup lang="ts">
 import { User, Lock, Message } from '@element-plus/icons-vue'
 import { useRegister } from '@/function/register'
-import { ref } from 'vue'
 
 const {
-  loading,
-  registerForm,
-  registerRules,
-  registerFormRef,
-  handleRegister,
-  backToLogin,
-  sendCode,
-  countdown
+    loading,
+    registerForm,
+    registerRules,
+    registerFormRef,
+    handleRegister,
+    backToLogin,
+    countdown,
+    currentStep,
+    handleContinue,
+    backToStep1,
+    sendingCode,
+    handleSendCode
 } = useRegister()
-
-const currentStep = ref(1) // 1: 基本信息, 2: 邮箱验证
-
-const handleContinue = async (formEl: FormInstance | undefined) => {
-  if (!formEl) return
-  
-  await formEl.validate(async (valid: boolean) => {
-    if (valid) {
-      currentStep.value = 2
-    }
-  })
-}
-
-const backToStep1 = () => {
-  currentStep.value = 1
-}
 </script>
 
 <template>
@@ -100,14 +87,16 @@ const backToStep1 = () => {
               :prefix-icon="Message"
               class="h-10"
             />
-            <el-link
+            <el-button
               type="primary"
+              link
               class="ml-2 float-right"
               :disabled="!registerForm.email || countdown > 0"
-              @click="sendCode"
+              :loading="sendingCode"
+              @click="handleSendCode"
             >
               {{ countdown > 0 ? `${countdown}秒后重试` : '发送验证码' }}
-            </el-link>
+            </el-button>
           </el-form-item>
 
           <el-form-item label="验证码" prop="emailCode">
