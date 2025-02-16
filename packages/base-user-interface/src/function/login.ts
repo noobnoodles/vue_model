@@ -128,6 +128,7 @@ export const useLogin = () => {
                     if (token && refreshToken && expireTime) {
                         TokenUtil.setTokens(token, refreshToken)
                         localStorage.setItem('expireTime', expireTime.toString())
+                        ElMessage.success('登录成功')
                         router.push('/')
                     } else {
                         throw new Error('Token数据不完整')
