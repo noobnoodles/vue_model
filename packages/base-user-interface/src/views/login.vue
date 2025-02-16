@@ -25,7 +25,6 @@ const {
 // 在组件挂载时获取系统信息
 onMounted(() => {
   fetchSystemTitle()
-  console.log("token is:",TokenUtil.getToken())
 })
 </script>
 
