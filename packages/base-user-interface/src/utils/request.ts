@@ -68,8 +68,15 @@ service.interceptors.response.use(
       return res
     }
     
-    ElMessage.error(res.message || '请求失败')
-    return Promise.reject(new Error(res.message || '请求失败'))
+    // 修改这里：将业务错误也作为 reject 处理，并保留状态码
+    return Promise.reject({
+      response: {
+        status: res.code,  // 使用业务码作为状态码
+        data: {
+          message: res.message
+        }
+      }
+    })
   },
   async (error) => {
     const originalRequest = error.config
@@ -85,7 +92,6 @@ service.interceptors.response.use(
       }
     }
     
-    ElMessage.error(error.response?.data?.message || '请求失败')
     return Promise.reject(error)
   }
 )

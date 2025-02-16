@@ -97,8 +97,18 @@ export const useLogin = () => {
     ElMessage.success('验证码已发送')
   }
 
+  // 添加表单错误状态
+  const formErrors = reactive({
+    account: '',
+    password: ''
+  })
+
   const handleLogin = async (formEl: FormInstance | undefined) => {
     if (!formEl) return
+    
+    // 清除之前的错误信息
+    formErrors.account = ''
+    formErrors.password = ''
     
     await formEl.validate(async (valid: boolean) => {
         if (valid) {
@@ -112,31 +122,32 @@ export const useLogin = () => {
                     sysBelone: sysInfoStore.systemInfo.sysBelone || 'AUTH_SYSTEM'
                 }) as ILoginResponse
                 
-                // 检查响应状态码和数据
                 if (response.code === 200 && response.data) {
-                    console.log('登录成功，用户信息:', response.data)
-                    
                     const { token, refreshToken, expireTime } = response.data
                     
-                    // 检查所有必需的token数据是否存在
                     if (token && refreshToken && expireTime) {
-                        // 使用 TokenUtil 保存token
                         TokenUtil.setTokens(token, refreshToken)
                         localStorage.setItem('expireTime', expireTime.toString())
-                        ElMessage.success('登录成功')
                         router.push('/')
                     } else {
                         throw new Error('Token数据不完整')
                     }
                 } else {
-                    ElMessage.error(response.message || '登录失败')
+                    throw new Error(response.message || '登录失败')
                 }
             } catch (error: any) {
                 console.error('登录错误:', error)
-                if (error.message === 'Token数据不完整') {
-                    ElMessage.error('登录失败：服务器返回的数据不完整')
+                
+                const errorStatus = error.response?.status || error.response?.code
+                
+                // 处理业务错误
+                if (errorStatus === 400) {
+                    // 所有400错误都显示在两个输入框下
+                    formErrors.account = '账号或密码错误'
+                    formErrors.password = '账号或密码错误'
                 } else {
-                    ElMessage.error(error.response?.data?.message || '登录失败')
+                    // 系统错误使用 ElMessage
+                    ElMessage.error('系统错误，请稍后重试')
                 }
             } finally {
                 loading.value = false
@@ -166,6 +177,7 @@ export const useLogin = () => {
     switchLoginType,
     sendVerifyCode,
     handleAccountInput,
+    formErrors,
     handleLogin,
     handleRegister,
     handleForgetPassword

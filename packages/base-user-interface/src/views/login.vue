@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { User, Lock } from '@element-plus/icons-vue'
 import { useLogin } from '@/function/login'
+import { onMounted } from 'vue'
 
 const {
   systemInfo,
@@ -10,6 +11,7 @@ const {
   loginFormRef,
   loginType,
   verifyCode,
+  formErrors,
   fetchSystemTitle,
   switchLoginType,
   sendVerifyCode,
@@ -27,7 +29,7 @@ onMounted(() => {
 
 <template>
   <div class="flex justify-center items-center min-h-screen bg-gray-50">
-    <el-card class="w-[420px] shadow-lg">
+    <el-card class="w-[420px] shadow-lg" :loading="loading">
       <template #header>
         <div class="text-center">
           <h2 class="text-xl font-bold text-gray-700">{{ systemInfo.title || '标题' }}</h2>
@@ -41,7 +43,11 @@ onMounted(() => {
         label-position="top"
         class="space-y-4"
       >
-        <el-form-item label="账号" prop="account">
+        <el-form-item 
+          label="账号" 
+          prop="account"
+          :error="formErrors.account"
+        >
           <el-input
             v-model="loginForm.account"
             placeholder="请输入账号/手机号/邮箱"
@@ -51,7 +57,12 @@ onMounted(() => {
           />
         </el-form-item>
         
-        <el-form-item label="密码" prop="password" v-if="loginType === 'password'">
+        <el-form-item 
+          label="密码" 
+          prop="password" 
+          v-if="loginType === 'password'"
+          :error="formErrors.password"
+        >
           <el-input
             v-model="loginForm.password"
             type="password"
@@ -89,7 +100,7 @@ onMounted(() => {
             class="w-full h-10 text-sm font-medium"
             @click="handleLogin(loginFormRef)"
           >
-            登录
+            {{ loading ? '登录中...' : '登录' }}
           </el-button>
         </el-form-item>
         
@@ -101,3 +112,21 @@ onMounted(() => {
     </el-card>
   </div>
 </template>
+
+<style scoped>
+.el-card.is-loading {
+  position: relative;
+  overflow: hidden;
+}
+
+.el-card.is-loading::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(255, 255, 255, 0.8);
+  z-index: 2;
+}
+</style>
