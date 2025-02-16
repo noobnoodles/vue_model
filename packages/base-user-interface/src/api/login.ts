@@ -35,4 +35,13 @@ export const logout = (): Promise<void> => {
     localStorage.removeItem('access_token')
     localStorage.removeItem('refresh_token')
   })
+}
+
+// 验证token
+export const verifyToken = (token: string) => {
+  return request({
+    url: '/login/verify',
+    method: 'post',
+    data: { token }
+  })
 } 

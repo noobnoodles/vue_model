@@ -1,10 +1,10 @@
-import { loginByPassword } from '@/api/index'
+import { loginByPassword, verifyToken } from '@/api/index'
 import type { IUserLogin, ILoginResponse } from '@/types/interfaces'
 import type { FormInstance, FormRules } from 'element-plus'
 import { useSysInfoStore } from '@/stores/sysInfo'
-import { ref, reactive } from 'vue'
+import { ref, reactive, onMounted } from 'vue'
 import { useRouter } from 'vue-router'
-import { ElMessage } from 'element-plus'
+import { ElMessage, ElMessageBox } from 'element-plus'
 import { TokenUtil } from '@/utils/request'
 
 export const useLogin = () => {
@@ -164,6 +164,51 @@ export const useLogin = () => {
   const handleForgetPassword = () => {
     router.push('/forget-password')
   }
+
+  // 修改token检查函数
+  const checkExistingToken = async () => {
+    const token = TokenUtil.getToken()
+    if (!token) return
+
+    try {
+      const response = await verifyToken(token)
+      if (response.code === 200) {
+        // token 有效，显示确认对话框
+        ElMessageBox.confirm(
+          '检测到您已登录，是否直接进入系统？',
+          '提示',
+          {
+            confirmButtonText: '确定',
+            cancelButtonText: '重新登录',
+            type: 'info'
+          }
+        ).then(() => {
+          // 用户点击确定，直接跳转
+          router.push('/')
+        }).catch(() => {
+          // 用户点击取消或关闭，清除token
+          TokenUtil.removeTokens()
+        })
+      }
+    } catch (error: any) {
+      const errorStatus = error.response?.status || error.response?.code
+      
+      if (errorStatus === 401) {
+        // token 已过期，清除本地存储
+        TokenUtil.removeTokens()
+        ElMessage.warning('登录信息已过期，请重新登录')
+      } else {
+        // 其他错误不做处理
+        console.error('Token验证错误:', error)
+      }
+    }
+  }
+
+  // 在组件挂载时检查token
+  onMounted(async () => {
+    await fetchSystemTitle()
+    await checkExistingToken()
+  })
 
   return {
     loading,

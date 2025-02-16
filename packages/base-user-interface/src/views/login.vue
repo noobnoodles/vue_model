@@ -2,6 +2,7 @@
 import { User, Lock } from '@element-plus/icons-vue'
 import { useLogin } from '@/function/login'
 import { onMounted } from 'vue'
+import { TokenUtil } from '@/utils/request';
 
 const {
   systemInfo,
@@ -24,6 +25,7 @@ const {
 // 在组件挂载时获取系统信息
 onMounted(() => {
   fetchSystemTitle()
+  console.log("token is:",TokenUtil.getToken())
 })
 </script>
 
