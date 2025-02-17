@@ -13,11 +13,7 @@ export default defineConfig({
     vue(),
     vueDevTools(),
     AutoImport({
-      imports: [
-        'vue',
-        'vue-router',
-        'pinia'
-      ],
+      imports: ['vue', 'vue-router', 'pinia'],
       dts: 'src/auto-imports.d.ts',
       resolvers: [ElementPlusResolver()],
     }),
@@ -29,7 +25,7 @@ export default defineConfig({
   resolve: {
     alias: {
       '@': fileURLToPath(new URL('./src', import.meta.url)),
-      '@shared': fileURLToPath(new URL('../../shared', import.meta.url))
+      '@shared': fileURLToPath(new URL('../../shared', import.meta.url)),
     },
   },
 })

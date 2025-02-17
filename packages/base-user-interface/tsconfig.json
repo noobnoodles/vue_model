@@ -8,19 +8,10 @@
       "@/*": ["./src/*"],
       "@shared/*": ["../../shared/*"]
     },
-    "types": [
-      "element-plus/global", 
-      "node",
-      "./src/auto-imports.d.ts",
-      "./src/components.d.ts"
-    ],
+    "types": ["element-plus/global", "node", "./src/auto-imports.d.ts", "./src/components.d.ts"],
     "moduleResolution": "bundler",
     "allowImportingTsExtensions": true,
     "target": "ES2020",
-    "lib": [
-      "ES2020",
-      "DOM",
-      "DOM.Iterable"
-    ]
+    "lib": ["ES2020", "DOM", "DOM.Iterable"]
   }
 }

@@ -24,14 +24,14 @@ export default defineConfig({
       '@shared': fileURLToPath(new URL('./packages/shared', import.meta.url)),
       '@admin': fileURLToPath(new URL('./packages/admin/src', import.meta.url)),
       '@client': fileURLToPath(new URL('./packages/client/src', import.meta.url)),
-    }
+    },
   },
   build: {
     rollupOptions: {
       input: {
         main: fileURLToPath(new URL('./index.html', import.meta.url)),
-      }
-    }
+      },
+    },
   },
   server: {
     port: 5173,
@@ -39,8 +39,8 @@ export default defineConfig({
       '/api': {
         target: 'http://localhost:3000',
         changeOrigin: true,
-        rewrite: (path) => path.replace(/^\/api/, '')
-      }
-    }
-  }
+        rewrite: (path) => path.replace(/^\/api/, ''),
+      },
+    },
+  },
 })

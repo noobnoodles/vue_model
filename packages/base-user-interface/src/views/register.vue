@@ -3,18 +3,18 @@ import { User, Lock, Message } from '@element-plus/icons-vue'
 import { useRegister } from '@/function/register'
 
 const {
-    loading,
-    registerForm,
-    registerRules,
-    registerFormRef,
-    handleRegister,
-    backToLogin,
-    countdown,
-    currentStep,
-    handleContinue,
-    backToStep1,
-    sendingCode,
-    handleSendCode
+  loading,
+  registerForm,
+  registerRules,
+  registerFormRef,
+  handleRegister,
+  backToLogin,
+  countdown,
+  currentStep,
+  handleContinue,
+  backToStep1,
+  sendingCode,
+  handleSendCode,
 } = useRegister()
 </script>
 
@@ -23,10 +23,12 @@ const {
     <el-card class="w-[420px] shadow-lg">
       <template #header>
         <div class="text-center">
-          <h2 class="text-xl font-bold text-gray-700">{{ currentStep === 1 ? '注册' : '邮箱验证' }}</h2>
+          <h2 class="text-xl font-bold text-gray-700">
+            {{ currentStep === 1 ? '注册' : '邮箱验证' }}
+          </h2>
         </div>
       </template>
-      
+
       <el-form
         ref="registerFormRef"
         :model="registerForm"
@@ -44,7 +46,7 @@ const {
               class="h-10"
             />
           </el-form-item>
-          
+
           <el-form-item label="密码" prop="password">
             <el-input
               v-model="registerForm.password"
@@ -55,7 +57,7 @@ const {
               class="h-10"
             />
           </el-form-item>
-          
+
           <el-form-item label="确认密码" prop="confirmPassword">
             <el-input
               v-model="registerForm.confirmPassword"
@@ -66,7 +68,7 @@ const {
               class="h-10"
             />
           </el-form-item>
-          
+
           <el-form-item>
             <el-button
               type="primary"
@@ -107,7 +109,7 @@ const {
               maxlength="6"
             />
           </el-form-item>
-          
+
           <el-form-item>
             <el-button
               type="primary"
@@ -117,20 +119,12 @@ const {
             >
               注册
             </el-button>
-            <el-button
-              text
-              class="w-full mt-2"
-              @click="backToStep1"
-            >
-              返回修改
-            </el-button>
+            <el-button text class="w-full mt-2" @click="backToStep1"> 返回修改 </el-button>
           </el-form-item>
         </template>
 
         <div class="flex justify-center mt-4">
-          <el-link type="primary" @click="backToLogin" class="text-sm">
-            返回登录
-          </el-link>
+          <el-link type="primary" @click="backToLogin" class="text-sm"> 返回登录 </el-link>
         </div>
       </el-form>
     </el-card>

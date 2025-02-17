@@ -6,7 +6,7 @@ export function register(data: IRegisterForm) {
   return request<IApiResponse>({
     url: '/register',
     method: 'post',
-    data
+    data,
   })
 }
 
@@ -15,7 +15,7 @@ export function checkUsername(username: string, sysBelone: string) {
   return request<IApiResponse<boolean>>({
     url: '/register/check-username',
     method: 'get',
-    params: { username, sysBelone }
+    params: { username, sysBelone },
   })
 }
 
@@ -24,9 +24,9 @@ export function sendRegisterCode(email: string, sysBelone: string) {
   return request<IApiResponse>({
     url: '/register/send-email-code',
     method: 'post',
-    params: { 
+    params: {
       email,
-      sysBelone
-    }
+      sysBelone,
+    },
   })
-} 
+}

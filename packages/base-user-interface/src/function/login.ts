@@ -12,7 +12,7 @@ export const useLogin = () => {
   const loading = ref(false)
   const loginFormRef = ref<FormInstance>()
   const sysInfoStore = useSysInfoStore()
-  
+
   // 登录方式：password-密码登录，code-验证码登录
   const loginType = ref<'password' | 'code'>('password')
   // 验证码
@@ -25,7 +25,7 @@ export const useLogin = () => {
     password: '',
     remember: false,
     loginType: 1, // 默认使用用户名登录
-    sysBelone: sysInfoStore.systemInfo.sysBelone || 'AUTH_SYSTEM'
+    sysBelone: sysInfoStore.systemInfo.sysBelone || 'AUTH_SYSTEM',
   }) as IUserLogin
 
   // 自动判断输入的账号类型
@@ -48,11 +48,14 @@ export const useLogin = () => {
   const loginRules = reactive<FormRules>({
     account: [
       { required: true, message: '请输入账号', trigger: 'blur' },
-      { 
+      {
         validator: (rule: any, value: string, callback: Function) => {
           if (accountType.value === 2 && !/^1[3-9]\d{9}$/.test(value)) {
             callback(new Error('请输入正确的手机号'))
-          } else if (accountType.value === 3 && !/^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/.test(value)) {
+          } else if (
+            accountType.value === 3 &&
+            !/^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/.test(value)
+          ) {
             callback(new Error('请输入正确的邮箱'))
           } else if (accountType.value === 1 && (value.length < 3 || value.length > 20)) {
             callback(new Error('用户名长度在 3 到 20 个字符'))
@@ -60,13 +63,13 @@ export const useLogin = () => {
             callback()
           }
         },
-        trigger: 'blur'
-      }
+        trigger: 'blur',
+      },
     ],
     password: [
       { required: true, message: '请输入密码', trigger: 'blur' },
-      { min: 6, max: 20, message: '长度在 6 到 20 个字符', trigger: 'blur' }
-    ]
+      { min: 6, max: 20, message: '长度在 6 到 20 个字符', trigger: 'blur' },
+    ],
   })
 
   // 获取系统标题
@@ -74,7 +77,7 @@ export const useLogin = () => {
     try {
       const controller = new AbortController()
       const timeoutId = setTimeout(() => controller.abort(), 500)
-      
+
       await sysInfoStore.fetchSystemInfo()
       clearTimeout(timeoutId)
     } catch (error) {
@@ -100,60 +103,60 @@ export const useLogin = () => {
   // 添加表单错误状态
   const formErrors = reactive({
     account: '',
-    password: ''
+    password: '',
   })
 
   const handleLogin = async (formEl: FormInstance | undefined) => {
     if (!formEl) return
-    
+
     // 清除之前的错误信息
     formErrors.account = ''
     formErrors.password = ''
-    
+
     await formEl.validate(async (valid: boolean) => {
-        if (valid) {
-            loading.value = true
-            try {
-                const response = await loginByPassword({
-                    account: loginForm.account,
-                    password: loginForm.password,
-                    remember: loginForm.remember,
-                    loginType: loginForm.loginType,
-                    sysBelone: sysInfoStore.systemInfo.sysBelone || 'AUTH_SYSTEM'
-                }) as ILoginResponse
-                
-                if (response.code === 200 && response.data) {
-                    const { token, refreshToken, expireTime } = response.data
-                    
-                    if (token && refreshToken && expireTime) {
-                        TokenUtil.setTokens(token, refreshToken)
-                        localStorage.setItem('expireTime', expireTime.toString())
-                        ElMessage.success('登录成功')
-                        router.push('/')
-                    } else {
-                        throw new Error('Token数据不完整')
-                    }
-                } else {
-                    throw new Error(response.message || '登录失败')
-                }
-            } catch (error: any) {
-                console.error('登录错误:', error)
-                
-                const errorStatus = error.response?.status || error.response?.code
-                
-                // 处理业务错误
-                if (errorStatus === 400) {
-                    // 所有400错误都显示在两个输入框下
-                    formErrors.account = '账号或密码错误'
-                    formErrors.password = '账号或密码错误'
-                } else {
-                    // 系统错误使用 ElMessage
-                    ElMessage.error('系统错误，请稍后重试')
-                }
-            } finally {
-                loading.value = false
+      if (valid) {
+        loading.value = true
+        try {
+          const response = (await loginByPassword({
+            account: loginForm.account,
+            password: loginForm.password,
+            remember: loginForm.remember,
+            loginType: loginForm.loginType,
+            sysBelone: sysInfoStore.systemInfo.sysBelone || 'AUTH_SYSTEM',
+          })) as ILoginResponse
+
+          if (response.code === 200 && response.data) {
+            const { token, refreshToken, expireTime } = response.data
+
+            if (token && refreshToken && expireTime) {
+              TokenUtil.setTokens(token, refreshToken)
+              localStorage.setItem('expireTime', expireTime.toString())
+              ElMessage.success('登录成功')
+              router.push('/')
+            } else {
+              throw new Error('Token数据不完整')
             }
+          } else {
+            throw new Error(response.message || '登录失败')
+          }
+        } catch (error: any) {
+          console.error('登录错误:', error)
+
+          const errorStatus = error.response?.status || error.response?.code
+
+          // 处理业务错误
+          if (errorStatus === 400) {
+            // 所有400错误都显示在两个输入框下
+            formErrors.account = '账号或密码错误'
+            formErrors.password = '账号或密码错误'
+          } else {
+            // 系统错误使用 ElMessage
+            ElMessage.error('系统错误，请稍后重试')
+          }
+        } finally {
+          loading.value = false
         }
+      }
     })
   }
 
@@ -174,25 +177,23 @@ export const useLogin = () => {
       const response = await verifyToken(token)
       if (response.code === 200) {
         // token 有效，显示确认对话框
-        ElMessageBox.confirm(
-          '检测到您已登录，是否直接进入系统？',
-          '提示',
-          {
-            confirmButtonText: '确定',
-            cancelButtonText: '重新登录',
-            type: 'info'
-          }
-        ).then(() => {
-          // 用户点击确定，直接跳转
-          router.push('/')
-        }).catch(() => {
-          // 用户点击取消或关闭，清除token
-          TokenUtil.removeTokens()
+        ElMessageBox.confirm('检测到您已登录，是否直接进入系统？', '提示', {
+          confirmButtonText: '确定',
+          cancelButtonText: '重新登录',
+          type: 'info',
         })
+          .then(() => {
+            // 用户点击确定，直接跳转
+            router.push('/')
+          })
+          .catch(() => {
+            // 用户点击取消或关闭，清除token
+            TokenUtil.removeTokens()
+          })
       }
     } catch (error: any) {
       const errorStatus = error.response?.status || error.response?.code
-      
+
       if (errorStatus === 401) {
         // token 已过期，清除本地存储
         TokenUtil.removeTokens()
@@ -226,6 +227,6 @@ export const useLogin = () => {
     formErrors,
     handleLogin,
     handleRegister,
-    handleForgetPassword
+    handleForgetPassword,
   }
 }

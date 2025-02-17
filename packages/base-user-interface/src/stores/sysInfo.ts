@@ -10,7 +10,7 @@ export const useSysInfoStore = defineStore('sysInfo', () => {
     description: '',
     version: '',
     copyright: '',
-    sysBelone: ''
+    sysBelone: '',
   })
 
   // 获取系统信息
@@ -27,6 +27,6 @@ export const useSysInfoStore = defineStore('sysInfo', () => {
 
   return {
     systemInfo,
-    fetchSystemInfo
+    fetchSystemInfo,
   }
 })

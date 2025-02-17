@@ -6,7 +6,7 @@ export function sendResetCode(target: string, sysBelone: string, account: string
   return request<IApiResponse>({
     url: '/forget-password/code',
     method: 'post',
-    data: { target, sysBelone, account }
+    data: { target, sysBelone, account },
   })
 }
 
@@ -15,22 +15,27 @@ export function resetPassword(email: string, newPassword: string, code: string, 
   return request<IApiResponse>({
     url: '/forget-password/reset',
     method: 'post',
-    data: { email, newPassword, code, sysBelone }
+    data: { email, newPassword, code, sysBelone },
   })
 }
 
 // 修改密码
-export function changePassword(target: string, confirmPassword: string, newPassword: string, sysBelone: string, code:string ) {
+export function changePassword(
+  target: string,
+  confirmPassword: string,
+  newPassword: string,
+  sysBelone: string,
+  code: string,
+) {
   return request<IApiResponse>({
     url: '/forget-password/change',
     method: 'post',
-    data: { 
+    data: {
       target,
       confirmPassword,
       newPassword,
       sysBelone,
-      code
-    }
+      code,
+    },
   })
 }
-

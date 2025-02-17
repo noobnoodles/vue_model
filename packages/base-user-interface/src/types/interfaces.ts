@@ -3,8 +3,8 @@ export interface IUserLogin {
   account: string
   password: string
   remember: boolean
-  loginType: 1 | 2 | 3  // 1-用户名，2-手机号，3-邮箱
-  sysBelone: string     // 所属系统
+  loginType: 1 | 2 | 3 // 1-用户名，2-手机号，3-邮箱
+  sysBelone: string // 所属系统
 }
 
 export interface IUserRegister {
@@ -17,11 +17,11 @@ export interface IUserRegister {
 // 系统相关接口
 export interface ISystemInfo {
   // 系统基本信息
-  title: string           // 系统标题
-  description: string     // 系统描述
-  version: string        // 系统版本
-  copyright: string      // 版权信息
-  sysBelone: string      // 系统标识
+  title: string // 系统标题
+  description: string // 系统描述
+  version: string // 系统版本
+  copyright: string // 版权信息
+  sysBelone: string // 系统标识
 }
 
 // 通用响应接口
@@ -37,7 +37,7 @@ export interface IRegisterForm {
   password: string
   confirmPassword: string
   email: string
-  emailCode: string  // 改为 emailCode 以匹配后端
+  emailCode: string // 改为 emailCode 以匹配后端
   sysBelone: string
 }
 
@@ -50,9 +50,9 @@ export interface IRegisterResponse {
 
 // Token相关接口
 export interface ITokenResponse {
-  token: string           // 对应后端的token字段
-  refreshToken: string    // 对应后端的refreshToken字段
-  expireTime: number      // 对应后端的expireTime字段 (Long)
+  token: string // 对应后端的token字段
+  refreshToken: string // 对应后端的refreshToken字段
+  expireTime: number // 对应后端的expireTime字段 (Long)
 }
 
 // 登录响应接口

@@ -6,7 +6,7 @@ export const loginByPassword = (data: IUserLogin): Promise<ILoginResponse> => {
   return request({
     url: '/login/password',
     method: 'post',
-    data
+    data,
   })
 }
 
@@ -16,8 +16,8 @@ export const loginByCode = (data: IUserLogin, code: string): Promise<ILoginRespo
     url: '/login/code',
     method: 'post',
     data,
-    params: { code }
-  }).then(response => {
+    params: { code },
+  }).then((response) => {
     // 保存token
     const { accessToken, refreshToken } = response.data.token
     localStorage.setItem('access_token', accessToken)
@@ -30,7 +30,7 @@ export const loginByCode = (data: IUserLogin, code: string): Promise<ILoginRespo
 export const logout = (): Promise<void> => {
   return request({
     url: '/login/logout',
-    method: 'post'
+    method: 'post',
   }).finally(() => {
     localStorage.removeItem('access_token')
     localStorage.removeItem('refresh_token')
@@ -42,6 +42,6 @@ export const verifyToken = (token: string) => {
   return request({
     url: '/login/verify',
     method: 'post',
-    data: { token }
+    data: { token },
   })
-} 
+}

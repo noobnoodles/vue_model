@@ -7,15 +7,15 @@ import { ref } from 'vue'
 const sendingCode = ref(false)
 
 const {
-    loading,
-    forgetForm,
-    forgetRules,
-    forgetFormRef,
-    handleSubmit,
-    backToLogin,
-    sendCode,
-    countdown,
-    resetSuccess
+  loading,
+  forgetForm,
+  forgetRules,
+  forgetFormRef,
+  handleSubmit,
+  backToLogin,
+  sendCode,
+  countdown,
+  resetSuccess,
 } = useForgetPassword()
 
 const handleSendCode = async () => {
@@ -37,7 +37,7 @@ const handleSendCode = async () => {
           <h2 class="text-xl font-bold text-gray-700">重置密码</h2>
         </div>
       </template>
-      
+
       <!-- 重置成功显示 -->
       <template v-if="resetSuccess">
         <div class="text-center space-y-4">
@@ -55,7 +55,7 @@ const handleSendCode = async () => {
           </el-button>
         </div>
       </template>
-      
+
       <!-- 重置表单 -->
       <el-form
         v-else
@@ -92,7 +92,7 @@ const handleSendCode = async () => {
             maxlength="6"
           />
         </el-form-item>
-        
+
         <el-form-item label="新密码" prop="newPassword">
           <el-input
             v-model="forgetForm.newPassword"
@@ -103,7 +103,7 @@ const handleSendCode = async () => {
             class="h-10"
           />
         </el-form-item>
-        
+
         <el-form-item label="确认密码" prop="confirmPassword">
           <el-input
             v-model="forgetForm.confirmPassword"
@@ -114,7 +114,7 @@ const handleSendCode = async () => {
             class="h-10"
           />
         </el-form-item>
-        
+
         <el-form-item>
           <el-button
             type="primary"
@@ -127,9 +127,7 @@ const handleSendCode = async () => {
         </el-form-item>
 
         <div class="flex justify-center mt-4">
-          <el-link type="primary" @click="backToLogin" class="text-sm">
-            返回登录
-          </el-link>
+          <el-link type="primary" @click="backToLogin" class="text-sm"> 返回登录 </el-link>
         </div>
       </el-form>
     </el-card>
