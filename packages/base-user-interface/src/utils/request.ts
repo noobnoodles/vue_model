@@ -1,5 +1,6 @@
 import axios from 'axios'
 import type { AxiosInstance, AxiosRequestConfig, AxiosResponse } from 'axios'
+import { TokenUtil } from './tokenUtil'
 
 // 添加一行调试代码
 console.log('API URL:', import.meta.env.VITE_API_URL)
@@ -13,37 +14,6 @@ const service: AxiosInstance = axios.create({
     'Content-Type': 'application/json;charset=utf-8',
   },
 })
-
-// token相关工具函数
-export const TokenUtil = {
-  getToken: () => localStorage.getItem('token'),
-  getRefreshToken: () => localStorage.getItem('refreshToken'),
-  setTokens: (token: string, refreshToken: string) => {
-    localStorage.setItem('token', token)
-    localStorage.setItem('refreshToken', refreshToken)
-  },
-  removeTokens: () => {
-    localStorage.removeItem('token')
-    localStorage.removeItem('refreshToken')
-    localStorage.removeItem('expireTime')
-  },
-}
-
-// 刷新token的函数
-const refreshToken = async () => {
-  try {
-    const response = await service.post('/auth/refresh', {
-      refreshToken: TokenUtil.getRefreshToken(),
-    })
-    const { accessToken, refreshToken } = response.data.data
-    TokenUtil.setTokens(accessToken, refreshToken)
-    return accessToken
-  } catch (error) {
-    TokenUtil.removeTokens()
-    window.location.href = '/login'
-    return null
-  }
-}
 
 // 修改请求拦截器
 service.interceptors.request.use(
@@ -67,7 +37,7 @@ service.interceptors.response.use(
       return res
     }
 
-    // 修改这里：将业务错误也作为 reject 处理，并保留状态码
+    // 处理业务错误
     return Promise.reject({
       response: {
         status: res.code, // 使用业务码作为状态码
@@ -83,7 +53,7 @@ service.interceptors.response.use(
     // token过期处理
     if (error.response?.status === 401 && !originalRequest._retry) {
       originalRequest._retry = true
-      const newToken = await refreshToken()
+      const newToken = await TokenUtil.refreshToken()
 
       if (newToken) {
         originalRequest.headers['Authorization'] = `Bearer ${newToken}`
