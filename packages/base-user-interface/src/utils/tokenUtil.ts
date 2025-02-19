@@ -1,4 +1,4 @@
-import { refreshToken } from '@/api/token'
+import { refreshTokenApi } from '@/api/token'
 
 // Token相关工具函数
 export const TokenUtil = {
@@ -24,10 +24,13 @@ export const TokenUtil = {
   // 刷新token
   refreshToken: async () => {
     try {
-      const response = await refreshToken(TokenUtil.getRefreshToken() || '')
-      const { token: accessToken, refreshToken } = response.data
-      TokenUtil.setTokens(accessToken, refreshToken)
-      return accessToken
+      const response = await refreshTokenApi(TokenUtil.getRefreshToken() || '')
+      if (response.data) {
+        const { token, refreshToken: newRefreshToken } = response.data
+        TokenUtil.setTokens(token, newRefreshToken)
+        return token
+      }
+      throw new Error('Token refresh failed: No data received')
     } catch (error) {
       TokenUtil.removeTokens()
       window.location.href = '/login'

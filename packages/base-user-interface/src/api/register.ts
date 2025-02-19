@@ -11,22 +11,21 @@ export function register(data: IRegisterForm) {
 }
 
 // 检查用户名是否可用
-export function checkUsername(username: string, sysBelone: string) {
+export function checkUsername(username: string) {
   return request<IApiResponse<boolean>>({
     url: '/register/check-username',
     method: 'get',
-    params: { username, sysBelone },
+    params: { username },
   })
 }
 
 // 发送注册验证码
-export function sendRegisterCode(email: string, sysBelone: string) {
+export function sendRegisterCode(email: string) {
   return request<IApiResponse>({
     url: '/register/send-email-code',
     method: 'post',
     params: {
       email,
-      sysBelone,
     },
   })
 }

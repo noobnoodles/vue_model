@@ -4,7 +4,6 @@ export interface IUserLogin {
   password: string
   remember: boolean
   loginType: 1 | 2 | 3 // 1-用户名，2-手机号，3-邮箱
-  sysBelone: string // 所属系统
 }
 
 export interface IUserRegister {
@@ -12,16 +11,6 @@ export interface IUserRegister {
   password: string
   email: string
   avatar?: string
-}
-
-// 系统相关接口
-export interface ISystemInfo {
-  // 系统基本信息
-  title: string // 系统标题
-  description: string // 系统描述
-  version: string // 系统版本
-  copyright: string // 版权信息
-  sysBelone: string // 系统标识
 }
 
 // 通用响应接口
@@ -38,7 +27,6 @@ export interface IRegisterForm {
   confirmPassword: string
   email: string
   emailCode: string // 改为 emailCode 以匹配后端
-  sysBelone: string
 }
 
 // 注册响应接口

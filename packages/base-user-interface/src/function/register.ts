@@ -1,7 +1,6 @@
 import { register, sendRegisterCode } from '@/api'
 import type { IRegisterForm } from '@/types/interfaces'
 import type { FormInstance, FormRules } from 'element-plus'
-import { useSysInfoStore } from '@/stores/sysInfo'
 import { ref, reactive, onUnmounted } from 'vue'
 import { useRouter } from 'vue-router'
 import { ElMessage } from 'element-plus'
@@ -10,7 +9,6 @@ export function useRegister() {
   const router = useRouter()
   const loading = ref(false)
   const registerFormRef = ref<FormInstance>()
-  const sysInfoStore = useSysInfoStore()
 
   const countdown = ref(0)
   const timer = ref<NodeJS.Timeout | null>(null)
@@ -23,7 +21,6 @@ export function useRegister() {
     confirmPassword: '',
     email: '',
     emailCode: '',
-    sysBelone: sysInfoStore.systemInfo.sysBelone || 'AUTH_SYSTEM',
   })
 
   const registerRules = reactive<FormRules>({
@@ -76,7 +73,7 @@ export function useRegister() {
       }
 
       // 调用发送验证码接口
-      await sendRegisterCode(registerForm.value.email, registerForm.value.sysBelone)
+      await sendRegisterCode(registerForm.value.email)
 
       ElMessage.success('验证码已发送，请查收邮件')
       countdown.value = 60
@@ -108,7 +105,6 @@ export function useRegister() {
             confirmPassword: registerForm.value.confirmPassword,
             email: registerForm.value.email,
             emailCode: registerForm.value.emailCode,
-            sysBelone: registerForm.value.sysBelone,
           })
           ElMessage.success('注册成功')
           router.push('/login')

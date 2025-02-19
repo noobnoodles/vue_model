@@ -2,7 +2,6 @@ import { ref, reactive, onUnmounted } from 'vue'
 import type { FormInstance, FormRules } from 'element-plus'
 import { useRouter } from 'vue-router'
 import { sendResetCode, changePassword } from '@/api'
-import { useSysInfoStore } from '@/stores/sysInfo'
 
 export function useForgetPassword() {
   const router = useRouter()
@@ -11,14 +10,12 @@ export function useForgetPassword() {
   const countdown = ref(0)
   const timer = ref<NodeJS.Timeout | null>(null)
   const resetSuccess = ref(false)
-  const sysInfoStore = useSysInfoStore()
 
   const forgetForm = reactive({
     account: '',
     code: '',
     newPassword: '',
     confirmPassword: '',
-    sysBelone: sysInfoStore.systemInfo.sysBelone || 'AUTH_SYSTEM',
   })
 
   const forgetRules = reactive<FormRules>({
@@ -61,7 +58,6 @@ export function useForgetPassword() {
             account: forgetForm.account,
             confirmPassword: forgetForm.confirmPassword,
             newPassword: forgetForm.newPassword,
-            sysBelone: forgetForm.sysBelone,
             code: forgetForm.code,
           })
 
@@ -69,7 +65,6 @@ export function useForgetPassword() {
             forgetForm.account,
             forgetForm.confirmPassword,
             forgetForm.newPassword,
-            forgetForm.sysBelone,
             forgetForm.code,
           )
           ElMessage.success('密码重置成功')
@@ -102,7 +97,7 @@ export function useForgetPassword() {
       }
 
       // 调用发送验证码接口，添加系统标识
-      await sendResetCode(forgetForm.account, forgetForm.sysBelone, forgetForm.account)
+      await sendResetCode(forgetForm.account, forgetForm.account)
 
       ElMessage.success('验证码已发送，请查收邮件')
       countdown.value = 60

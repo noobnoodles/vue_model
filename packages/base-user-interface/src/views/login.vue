@@ -1,11 +1,8 @@
 <script setup lang="ts">
 import { User, Lock } from '@element-plus/icons-vue'
 import { useLogin } from '@/function/login'
-import { onMounted } from 'vue'
-import { TokenUtil } from '@/utils/request'
 
 const {
-  systemInfo,
   loading,
   loginForm,
   loginRules,
@@ -13,7 +10,6 @@ const {
   loginType,
   verifyCode,
   formErrors,
-  fetchSystemTitle,
   switchLoginType,
   sendVerifyCode,
   handleLogin,
@@ -21,11 +17,6 @@ const {
   handleForgetPassword,
   handleAccountInput,
 } = useLogin()
-
-// 在组件挂载时获取系统信息
-onMounted(() => {
-  fetchSystemTitle()
-})
 </script>
 
 <template>
@@ -33,7 +24,7 @@ onMounted(() => {
     <el-card class="w-[420px] shadow-lg" :loading="loading">
       <template #header>
         <div class="text-center">
-          <h2 class="text-xl font-bold text-gray-700">{{ systemInfo.title || '标题' }}</h2>
+          <h2 class="text-xl font-bold text-gray-700">欢迎登录xx商城</h2>
         </div>
       </template>
 

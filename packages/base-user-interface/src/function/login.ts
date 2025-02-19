@@ -1,17 +1,15 @@
 import { loginByPassword, verifyToken } from '@/api/index'
 import type { IUserLogin, ILoginResponse } from '@/types/interfaces'
 import type { FormInstance, FormRules } from 'element-plus'
-import { useSysInfoStore } from '@/stores/sysInfo'
 import { ref, reactive, onMounted } from 'vue'
 import { useRouter } from 'vue-router'
 import { ElMessage, ElMessageBox } from 'element-plus'
-import { TokenUtil } from '@/utils/request'
+import { TokenUtil } from '@/utils/tokenUtil'
 
 export const useLogin = () => {
   const router = useRouter()
   const loading = ref(false)
   const loginFormRef = ref<FormInstance>()
-  const sysInfoStore = useSysInfoStore()
 
   // 登录方式：password-密码登录，code-验证码登录
   const loginType = ref<'password' | 'code'>('password')
@@ -25,7 +23,6 @@ export const useLogin = () => {
     password: '',
     remember: false,
     loginType: 1, // 默认使用用户名登录
-    sysBelone: sysInfoStore.systemInfo.sysBelone || 'AUTH_SYSTEM',
   }) as IUserLogin
 
   // 自动判断输入的账号类型
@@ -72,19 +69,6 @@ export const useLogin = () => {
     ],
   })
 
-  // 获取系统标题
-  const fetchSystemTitle = async () => {
-    try {
-      const controller = new AbortController()
-      const timeoutId = setTimeout(() => controller.abort(), 500)
-
-      await sysInfoStore.fetchSystemInfo()
-      clearTimeout(timeoutId)
-    } catch (error) {
-      console.error('获取系统信息失败:', error)
-    }
-  }
-
   // 切换登录方式
   const switchLoginType = () => {
     loginType.value = loginType.value === 'password' ? 'code' : 'password'
@@ -122,7 +106,6 @@ export const useLogin = () => {
             password: loginForm.password,
             remember: loginForm.remember,
             loginType: loginForm.loginType,
-            sysBelone: sysInfoStore.systemInfo.sysBelone || 'AUTH_SYSTEM',
           })) as ILoginResponse
 
           if (response.code === 200 && response.data) {
@@ -170,6 +153,7 @@ export const useLogin = () => {
 
   // 修改token检查函数
   const checkExistingToken = async () => {
+    console.log('Checking existing token...')
     const token = TokenUtil.getToken()
     if (!token) return
 
@@ -207,7 +191,6 @@ export const useLogin = () => {
 
   // 在组件挂载时检查token
   onMounted(async () => {
-    await fetchSystemTitle()
     await checkExistingToken()
   })
 
@@ -219,8 +202,6 @@ export const useLogin = () => {
     loginType,
     verifyCode,
     accountType,
-    systemInfo: computed(() => sysInfoStore.systemInfo),
-    fetchSystemTitle,
     switchLoginType,
     sendVerifyCode,
     handleAccountInput,
