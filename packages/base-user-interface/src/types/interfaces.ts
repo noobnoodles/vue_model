@@ -56,3 +56,18 @@ export interface ILoginResponse {
     expireTime: number
   }
 }
+
+// 添加管理员相关接口
+export interface IAdminForm {
+  userId: string
+  password: string
+  account: string
+  phone: string
+  email: string
+}
+
+export interface IAdminResponse {
+  code: number
+  message: string
+  data?: any
+}

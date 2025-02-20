@@ -1,14 +1,12 @@
 {
-  "name": "@vue_model/base-user-interface",
-  "version": "0.0.0",
+  "name": "base-user-interface",
   "private": true,
+  "version": "0.0.0",
   "type": "module",
   "scripts": {
     "dev": "vite",
-    "build": "run-p type-check \"build-only {@}\" --",
-    "preview": "vite preview",
-    "build-only": "vite build",
-    "type-check": "vue-tsc --build"
+    "build": "vue-tsc && vite build",
+    "preview": "vite preview"
   },
   "devDependencies": {
     "vite-plugin-vue-devtools": "^7.7.0"
